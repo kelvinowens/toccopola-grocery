@@ -1,33 +1,175 @@
 <!doctype html>
-<html>
+<html lang="en">
   <head>
-    <title>Toccopola Grocery</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Toccopola Grocery - Menu</title>
     <link
       rel="stylesheet"
       href="https://cdn.jsdelivr.net/npm/bootswatch@5/dist/lux/bootstrap.min.css"
     />
+
+    <style>
+      body {
+        background-color: #f4f4f4;
+        padding: 50px 0;
+        font-family: "Lux", sans-serif;
+      }
+
+      /* The white "Paper" container */
+      .menu-container {
+        background-color: #fff;
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 60px;
+        border: 1px solid #ddd;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+      }
+
+      /* The Top Header */
+      .menu-header {
+        border-bottom: 5px solid #000;
+        padding-bottom: 20px;
+        margin-bottom: 40px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .menu-header h1 {
+        font-weight: 900;
+        font-size: 3.5rem;
+        margin: 0;
+        letter-spacing: -2px;
+      }
+
+      .header-info {
+        text-align: right;
+        text-transform: uppercase;
+        font-size: 0.8rem;
+        letter-spacing: 1px;
+        line-height: 1.4;
+      }
+
+      /* The 2-Column Grid for Categories */
+      #menu-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 50px;
+      }
+
+      .category-section {
+        margin-bottom: 30px;
+      }
+
+      .category-title {
+        border-bottom: 2px solid #000;
+        padding-bottom: 5px;
+        margin-bottom: 20px;
+        font-weight: 800;
+        text-transform: uppercase;
+        font-size: 1.4rem;
+      }
+
+      /* Individual Menu Items */
+      .menu-item {
+        margin-bottom: 20px;
+      }
+
+      .item-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+      }
+
+      .item-name {
+        font-weight: 700;
+        font-size: 1.1rem;
+        text-transform: uppercase;
+      }
+
+      .item-price {
+        font-weight: 700;
+      }
+
+      .item-description {
+        font-size: 0.85rem;
+        color: #555;
+        margin-top: 5px;
+        line-height: 1.4;
+      }
+
+      @media (max-width: 768px) {
+        #menu-grid {
+          grid-template-columns: 1fr;
+        }
+        .menu-container {
+          padding: 30px;
+        }
+      }
+    </style>
   </head>
-  <body class="p-4">
-    <h1>🍽️ Toccopola Grocery</h1>
-    <div id="menu"></div>
+  <body>
+    <div class="menu-container">
+      <header class="menu-header">
+        <div>
+          <strong>Toccopola Grocery</strong>
+        </div>
+        <h1>MENU</h1>
+        <div class="header-info">
+          Make a Reservation<br />
+          662-236-2139
+        </div>
+      </header>
+
+      <div id="menu-grid"></div>
+
+      <footer class="mt-5 text-center text-muted border-top pt-4">
+        <small>@reallygreatsite</small>
+      </footer>
+    </div>
 
     <script>
+      // Use your existing fetch path
       fetch("data/menu.json")
         .then((res) => res.json())
         .then((data) => {
-          const container = document.getElementById("menu");
+          const grid = document.getElementById("menu-grid");
 
-          data.forEach((item) => {
-            container.innerHTML += `
-        <div class="card mb-3">
-          <div class="card-body">
-            <h5>${item.name} - $${item.price}</h5>
-            <p>${item.description}</p>
-          </div>
-        </div>
-      `;
+          // 1. Group the flat array into categories
+          const groupedMenu = data.reduce((acc, item) => {
+            if (!acc[item.category]) acc[item.category] = [];
+            acc[item.category].push(item);
+            return acc;
+          }, {});
+
+          // 2. Loop through categories and build the HTML
+          Object.keys(groupedMenu).forEach((category) => {
+            const section = document.createElement("div");
+            section.className = "category-section";
+
+            let itemsHtml = "";
+            groupedMenu[category].forEach((item) => {
+              itemsHtml += `
+                            <div class="menu-item">
+                                <div class="item-header">
+                                    <span class="item-name">${item.name}</span>
+                                    <span class="item-price">$${item.price}</span>
+                                </div>
+                                ${item.description ? `<p class="item-description">${item.description}</p>` : ""}
+                            </div>
+                        `;
+            });
+
+            section.innerHTML = `
+                        <h2 class="category-title">${category}</h2>
+                        ${itemsHtml}
+                    `;
+
+            grid.appendChild(section);
           });
-        });
+        })
+        .catch((err) => console.error("Error loading menu:", err));
     </script>
   </body>
 </html>
