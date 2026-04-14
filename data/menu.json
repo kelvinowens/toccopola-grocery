@@ -1,9 +1,65 @@
 [
   {
-    "id": 1,
-    "name": "Fried Catfish Plate",
-    "price": 12.99,
-    "category": "Entrees",
-    "description": "Served with fries and hushpuppies"
+    "id": 1776183119018,
+    "name": "Cheese Chunks",
+    "price": 8,
+    "category": "Starters",
+    "description": "Hand battered chunks of hoop cheese, deep fried to perfection"
+  },
+  {
+    "id": 1776183196844,
+    "name": "Cheese Sticks",
+    "price": 8,
+    "category": "Starters",
+    "description": "Mozzarella cheese battered and fried to a golden brown"
+  },
+  {
+    "id": 1776183283744,
+    "name": "Sausage & Cheese Platter",
+    "price": 8,
+    "category": "Starters",
+    "description": "Seasoned sausage w/ cubed cheese topped with Toccopola Seasoning"
+  },
+  {
+    "id": 1776183310473,
+    "name": "Fried Okra",
+    "price": 8,
+    "category": "Starters",
+    "description": "Fresh fried okra"
+  },
+  {
+    "id": 1776183352345,
+    "name": "Fried Pickles",
+    "price": 8,
+    "category": "Starters",
+    "description": "Dill slices battered and deep fried to perfection"
+  },
+  {
+    "id": 1776183385371,
+    "name": "Large Garden Salad",
+    "price": 8,
+    "category": "Salads",
+    "description": ""
+  },
+  {
+    "id": 1776183417459,
+    "name": "Fried or Grilled Chicken Salad",
+    "price": 11,
+    "category": "Salads",
+    "description": ""
+  },
+  {
+    "id": 1776183443893,
+    "name": "Ribeye Steak Salad",
+    "price": 14,
+    "category": "Salads",
+    "description": ""
+  },
+  {
+    "id": 1776183476552,
+    "name": "Fried or Grilled Shrimp Salad",
+    "price": 14,
+    "category": "Salads",
+    "description": ""
   }
 ]
