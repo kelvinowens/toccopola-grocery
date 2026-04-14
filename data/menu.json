@@ -61,5 +61,12 @@
     "price": 14,
     "category": "Salads",
     "description": ""
+  },
+  {
+    "id": 1776200342937,
+    "name": "8 oz",
+    "price": 20,
+    "category": "Ribeyes",
+    "description": ""
   }
 ]
