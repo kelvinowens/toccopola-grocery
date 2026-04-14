@@ -68,5 +68,68 @@
     "price": 20,
     "category": "Ribeyes",
     "description": ""
+  },
+  {
+    "id": 1776200573743,
+    "name": "12 oz",
+    "price": 24,
+    "category": "Ribeyes",
+    "description": ""
+  },
+  {
+    "id": 1776200589548,
+    "name": "16 oz",
+    "price": 28,
+    "category": "Ribeyes",
+    "description": ""
+  },
+  {
+    "id": 1776200629116,
+    "name": "2 Chicken Tenders",
+    "price": 16,
+    "category": "Chicken Tenders",
+    "description": ""
+  },
+  {
+    "id": 1776200663108,
+    "name": "3 Chicken Tenders",
+    "price": 19,
+    "category": "Chicken Tenders",
+    "description": ""
+  },
+  {
+    "id": 1776200691485,
+    "name": "1 Whole Fish",
+    "price": 15,
+    "category": "Catfish",
+    "description": ""
+  },
+  {
+    "id": 1776200710349,
+    "name": "2 Whole Fish",
+    "price": 18,
+    "category": "Catfish",
+    "description": ""
+  },
+  {
+    "id": 1776200755907,
+    "name": "1 Piece Fillet",
+    "price": 15,
+    "category": "Catfish",
+    "description": ""
+  },
+  {
+    "id": 1776200771507,
+    "name": "2 Piece Fillet",
+    "price": 18,
+    "category": "Catfish",
+    "description": ""
+  },
+  {
+    "id": 1776200788346,
+    "name": "3 Piece Fillet",
+    "price": 21,
+    "category": "Catfish",
+    "description": ""
   }
 ]
