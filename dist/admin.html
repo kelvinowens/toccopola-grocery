@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Admin Dashboard - Toccopola Grocery</title>
 
-    <!-- Bootswatch Theme -->
     <link
       id="themeStylesheet"
       rel="stylesheet"
@@ -15,9 +14,14 @@
     <style>
       body {
         padding: 20px;
+        background-color: #f8f9fa;
       }
       .card {
         border-radius: 12px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      }
+      .table img {
+        max-width: 50px;
       }
     </style>
   </head>
@@ -34,7 +38,6 @@
         </select>
       </div>
 
-      <!-- Form -->
       <div class="card mb-4">
         <div class="card-body">
           <h5>Add / Edit Menu Item</h5>
@@ -53,6 +56,7 @@
               <div class="col-md-2">
                 <input
                   type="number"
+                  step="0.01"
                   id="price"
                   class="form-control"
                   placeholder="Price"
@@ -64,7 +68,8 @@
                   type="text"
                   id="category"
                   class="form-control"
-                  placeholder="Category"
+                  placeholder="Category (e.g. Starters, Catfish)"
+                  required
                 />
               </div>
               <div class="col-md-3">
@@ -76,16 +81,20 @@
                 />
               </div>
             </div>
-            <button class="btn btn-primary mt-3">Save Item</button>
+            <button class="btn btn-primary mt-3">Update List Locally</button>
           </form>
         </div>
       </div>
 
-      <!-- Table -->
       <div class="card">
         <div class="card-body">
-          <h5>Menu Items</h5>
-          <table class="table table-striped">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <h5>Current Menu Items</h5>
+            <button class="btn btn-success" onclick="saveToGitHub()">
+              🚀 Push Changes to GitHub
+            </button>
+          </div>
+          <table class="table table-striped align-middle">
             <thead>
               <tr>
                 <th>Name</th>
@@ -100,13 +109,24 @@
         </div>
       </div>
 
-      <button class="btn btn-success mt-3" onclick="downloadJSON()">
-        💾 Download JSON
-      </button>
+      <div class="mt-4 text-center">
+        <small class="text-muted"
+          >Note: "Push Changes" updates the live site. Changes take ~60s to
+          appear.</small
+        >
+      </div>
     </div>
 
     <script>
       let menu = [];
+
+      // Update these with your specific GitHub info
+      const GITHUB_CONFIG = {
+        owner: "kelvinowens",
+        repo: "toccopola-grocery",
+        path: "data/menu.json",
+        branch: "main", // Change to "gh-pages" if your data folder is there
+      };
 
       // Load existing menu.json
       fetch("data/menu.json")
@@ -117,29 +137,38 @@
         })
         .catch(() => {
           menu = [];
+          console.log("No existing menu.json found, starting fresh.");
         });
 
       function renderTable() {
         const table = document.getElementById("menuTable");
         table.innerHTML = "";
 
-        menu.forEach((item) => {
-          table.innerHTML += `
-      <tr>
-        <td>${item.name}</td>
-        <td>$${item.price}</td>
-        <td>${item.category || ""}</td>
-        <td>${item.description || ""}</td>
-        <td>
-          <button class="btn btn-sm btn-warning" onclick='editItem(${JSON.stringify(item)})'>Edit</button>
-          <button class="btn btn-sm btn-danger" onclick="deleteItem(${item.id})">Delete</button>
-        </td>
-      </tr>
-    `;
+        menu.forEach((item, index) => {
+          const row = document.createElement("tr");
+          row.innerHTML = `
+            <td><strong>${item.name}</strong></td>
+            <td>$${item.price}</td>
+            <td><span class="badge bg-secondary">${item.category || "Uncategorized"}</span></td>
+            <td><small>${item.description || ""}</small></td>
+            <td>
+              <button class="btn btn-sm btn-warning edit-btn" data-index="${index}">Edit</button>
+              <button class="btn btn-sm btn-danger" onclick="deleteItem(${item.id})">Delete</button>
+            </td>
+          `;
+          table.appendChild(row);
+        });
+
+        // Safe Event Listeners for Edit Buttons
+        document.querySelectorAll(".edit-btn").forEach((btn) => {
+          btn.addEventListener("click", () => {
+            const index = btn.getAttribute("data-index");
+            editItem(menu[index]);
+          });
         });
       }
 
-      // Add / Update Item
+      // Add / Update Item locally in the array
       document
         .getElementById("menuForm")
         .addEventListener("submit", function (e) {
@@ -172,6 +201,7 @@
         document.getElementById("price").value = item.price;
         document.getElementById("category").value = item.category;
         document.getElementById("description").value = item.description;
+        window.scrollTo(0, 0); // Scroll to top to see the form
       }
 
       function deleteItem(id) {
@@ -181,14 +211,59 @@
         }
       }
 
-      function downloadJSON() {
-        const blob = new Blob([JSON.stringify(menu, null, 2)], {
-          type: "application/json",
-        });
-        const a = document.createElement("a");
-        a.href = URL.createObjectURL(blob);
-        a.download = "menu.json";
-        a.click();
+      // NEW: GitHub API Save Function
+      async function saveToGitHub() {
+        const token = prompt("Please enter your GitHub Personal Access Token:");
+        if (!token) return;
+
+        const url = `https://api.github.com/repos/${GITHUB_CONFIG.owner}/${GITHUB_CONFIG.repo}/contents/${GITHUB_CONFIG.path}`;
+
+        try {
+          // 1. Get the current file's SHA (required by GitHub to update files)
+          const getResponse = await fetch(url, {
+            headers: { Authorization: `token ${token}` },
+          });
+
+          if (!getResponse.ok)
+            throw new Error(
+              "Could not find file on GitHub. Check your repo name/path.",
+            );
+
+          const fileData = await getResponse.json();
+          const sha = fileData.sha;
+
+          // 2. Encode the menu data to Base64 (GitHub requirement)
+          const newContent = btoa(
+            unescape(encodeURIComponent(JSON.stringify(menu, null, 2))),
+          );
+
+          // 3. Send the PUT request to GitHub
+          const putResponse = await fetch(url, {
+            method: "PUT",
+            headers: {
+              Authorization: `token ${token}`,
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              message: "Menu update from Admin Panel",
+              content: newContent,
+              sha: sha,
+              branch: GITHUB_CONFIG.branch,
+            }),
+          });
+
+          if (putResponse.ok) {
+            alert(
+              "🚀 Success! Your changes have been pushed. The live site will update in about a minute.",
+            );
+          } else {
+            const err = await putResponse.json();
+            alert("GitHub Error: " + err.message);
+          }
+        } catch (error) {
+          console.error(error);
+          alert("Connection Error: " + error.message);
+        }
       }
 
       function changeTheme(theme) {
@@ -197,7 +272,6 @@
         localStorage.setItem("theme", theme);
       }
 
-      // Load saved theme
       const savedTheme = localStorage.getItem("theme");
       if (savedTheme) changeTheme(savedTheme);
     </script>
