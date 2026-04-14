@@ -1,0 +1,33 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Toccopola Grocery</title>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootswatch@5/dist/lux/bootstrap.min.css"
+    />
+  </head>
+  <body class="p-4">
+    <h1>🍽️ Toccopola Grocery</h1>
+    <div id="menu"></div>
+
+    <script>
+      fetch("data/menu.json")
+        .then((res) => res.json())
+        .then((data) => {
+          const container = document.getElementById("menu");
+
+          data.forEach((item) => {
+            container.innerHTML += `
+        <div class="card mb-3">
+          <div class="card-body">
+            <h5>${item.name} - $${item.price}</h5>
+            <p>${item.description}</p>
+          </div>
+        </div>
+      `;
+          });
+        });
+    </script>
+  </body>
+</html>
