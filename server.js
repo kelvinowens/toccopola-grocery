@@ -20,7 +20,7 @@ app.use((req, res, next) => {
 
 // 2. MONGODB CONNECTION
 // Replace <password> with your actual database user password
-const MONGO_URI = "mongodb+srv://kelvinowens:Giogi006$1234!@cluster0.mongodb.net/toccopola_grocery?retryWrites=true&w=majority";
+const MONGO_URI = "mongodb+srv://kelvinowens:Giogi006$1234!@cluster0.ddp1odw.mongodb.net/?appName=Cluster0";
 
 mongoose.connect(MONGO_URI)
   .then(() => console.log("✅ Connected to MongoDB Atlas"))
