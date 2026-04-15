@@ -128,7 +128,10 @@
     <div class="menu-container">
       <header class="header-main">
         <h1>Toccopola Grocery</h1>
-        <p>Hot Deli • Fresh Meats • Friendly Service</p>
+        <p>
+          A family owned and operated restaurant.. bringing quality food and
+          service to your table!
+        </p>
       </header>
 
       <div id="menu-grid"></div>
@@ -136,20 +139,23 @@
       <div class="category-section sides-box mt-5">
         <h2 class="category-title text-center">Sides</h2>
         <ul class="sides-list">
-          <li>French Fries</li>
+          <li>Crinkle-Cut French Fries</li>
+          <li>Curly-Cut Fries</li>
+          <li>Steak Fries</li>
           <li>Baked Potato</li>
+          <li>Baked Sweet Potato</li>
           <li>Fried Okra</li>
           <li>Side Salad</li>
           <li>Cole Slaw</li>
           <li>Hushpuppies</li>
           <li>Tater Tots</li>
         </ul>
-        <p class="text-center mt-2"><small>Extra sides: $3.00 each</small></p>
+        <p class="text-center mt-2"><small>Extra sides: $5.00 each</small></p>
       </div>
 
       <footer class="mt-5 text-center text-muted">
         <hr />
-        <p>© 2026 Toccopola Grocery | Call ahead: (555) 123-4567</p>
+        <p>© 2026 Toccopola Grocery | Call ahead: (662)236-2139</p>
       </footer>
     </div>
 
@@ -196,11 +202,20 @@
             const catLower = category.toLowerCase();
             if (catLower.includes("salad")) {
               footerNote = `<p class="category-footer-note">* Add bacon and egg to any salad for $2.00</p>`;
-            } else if (
-              catLower.includes("catfish") ||
-              catLower.includes("ribeye")
-            ) {
-              footerNote = `<p class="category-footer-note">Served with choice of two sides and hushpuppies</p>`;
+            } else if (catLower.includes("ribeye")) {
+              footerNote = `<p class="category-footer-note">Juicy, fresh cut, seasoned & cooked to your liking. Served w/ choice of two sides.</p>`;
+            } else if (catLower.includes("chicken tenders")) {
+              footerNote = `<p class="category-footer-note">Our hand-cut breast tenders are a local favorite. Fried or grilled served with choice of two sides.</p>`;
+            } else if (catLower.includes("catfish")) {
+              footerNote = `<p class="category-footer-note">Hand battered and deep fried. Served with choice of two sides and hushpuppies</p>`;
+            } else if (catLower.includes("shrimp")) {
+              footerNote = `<p class="category-footer-note">Served with choice of two sides and hushpuppies. Grilled shrimp is pan-grilled and seasoned with house seasoning</p>`;
+            } else if (catLower.includes("desserts")) {
+              footerNote = `<p class="category-footer-note">Prices vary on availability. All of our desserts are handmade southern sweetness.</p>`;
+            } else if (catLower.includes("burgers & such")) {
+              footerNote = `<p class="category-footer-note">Our burgers are hand-patted and seasoned to perfection. Served with choice of one side.</p>`;
+            } else if (catLower.includes("kids meals")) {
+              footerNote = `<p class="category-footer-note">Served with choice of one side.</p>`;
             }
 
             section.innerHTML = `
