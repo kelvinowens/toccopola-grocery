@@ -3,239 +3,214 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Admin Dashboard - Toccopola Grocery</title>
-
-    <link
-      id="themeStylesheet"
-      rel="stylesheet"
-      href="https://cdn.jsdelivr.net/npm/bootswatch@5/dist/lux/bootstrap.min.css"
-    />
-
+    <title>Oxford 3D Prints - Admin Dashboard</title>
     <style>
       body {
+        font-family: sans-serif;
+        margin: 20px;
+        background: #f4f4f4;
+      }
+      .container {
+        max-width: 900px;
+        margin: auto;
+        background: white;
         padding: 20px;
-        background-color: #f8f9fa;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
       }
-      .card {
-        border-radius: 12px;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      h1 {
+        color: #333;
       }
-      .table img {
-        max-width: 50px;
+      .status-bar {
+        padding: 10px;
+        margin-bottom: 20px;
+        border-radius: 4px;
+        font-weight: bold;
+        display: none;
+      }
+      .success {
+        background: #d4edda;
+        color: #155724;
+        display: block;
+      }
+      .error {
+        background: #f8d7da;
+        color: #721c24;
+        display: block;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+      }
+      th,
+      td {
+        border: 1px solid #ddd;
+        padding: 12px;
+        text-align: left;
+      }
+      th {
+        background: #007bff;
+        color: white;
+      }
+      input,
+      textarea {
+        width: 90%;
+        padding: 8px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+      }
+      .actions {
+        margin-top: 20px;
+        display: flex;
+        gap: 10px;
+      }
+      button {
+        padding: 10px 15px;
+        cursor: pointer;
+        border: none;
+        border-radius: 4px;
+        transition: 0.3s;
+      }
+      .btn-add {
+        background: #28a745;
+        color: white;
+      }
+      .btn-save {
+        background: #007bff;
+        color: white;
+        font-weight: bold;
+      }
+      .btn-delete {
+        background: #dc3545;
+        color: white;
+      }
+      button:hover {
+        opacity: 0.8;
       }
     </style>
   </head>
   <body>
     <div class="container">
-      <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2>🍽️ Admin Dashboard</h2>
-        <select class="form-select w-auto" onchange="changeTheme(this.value)">
-          <option value="lux">Lux</option>
-          <option value="darkly">Darkly</option>
-          <option value="cosmo">Cosmo</option>
-          <option value="cyborg">Cyborg</option>
-          <option value="minty">Minty</option>
-        </select>
+      <h1>Inventory Manager</h1>
+      <div id="status" class="status-bar"></div>
+
+      <div class="actions">
+        <button class="btn-add" onclick="addItem()">+ Add New Item</button>
+        <button class="btn-save" onclick="saveToDatabase()">
+          💾 Save All Changes to Live Site
+        </button>
       </div>
 
-      <div class="card mb-4">
-        <div class="card-body">
-          <h5>Add / Edit Menu Item</h5>
-          <form id="menuForm">
-            <input type="hidden" id="itemId" />
-            <div class="row g-2">
-              <div class="col-md-4">
-                <input
-                  type="text"
-                  id="name"
-                  class="form-control"
-                  placeholder="Item Name"
-                  required
-                />
-              </div>
-              <div class="col-md-2">
-                <input
-                  type="number"
-                  step="0.01"
-                  id="price"
-                  class="form-control"
-                  placeholder="Price"
-                  required
-                />
-              </div>
-              <div class="col-md-3">
-                <input
-                  type="text"
-                  id="category"
-                  class="form-control"
-                  placeholder="Category (e.g. Starters, Catfish)"
-                  required
-                />
-              </div>
-              <div class="col-md-3">
-                <input
-                  type="text"
-                  id="description"
-                  class="form-control"
-                  placeholder="Description"
-                />
-              </div>
-            </div>
-            <button class="btn btn-primary mt-3">Update List Locally</button>
-          </form>
-        </div>
-      </div>
-
-      <div class="card">
-        <div class="card-body">
-          <div class="d-flex justify-content-between align-items-center mb-3">
-            <h5>Current Menu Items</h5>
-            <button class="btn btn-success" onclick="saveToGitHub()">
-              🚀 Push Changes to GitHub
-            </button>
-          </div>
-          <table class="table table-striped align-middle">
-            <thead>
-              <tr>
-                <th>Name</th>
-                <th>Price</th>
-                <th>Category</th>
-                <th>Description</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody id="menuTable"></tbody>
-          </table>
-        </div>
-      </div>
-
-      <div class="mt-4 text-center">
-        <small class="text-muted"
-          >Note: "Push Changes" updates the live site. Changes take ~60s to
-          appear.</small
-        >
-      </div>
+      <table>
+        <thead>
+          <tr>
+            <th>Category</th>
+            <th>Name</th>
+            <th>Price ($)</th>
+            <th>Description</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody id="admin-table-body"></tbody>
+      </table>
     </div>
 
     <script>
-          let menu = [];
+      let menuItems = [];
+      const statusDiv = document.getElementById("status");
 
-          // Update these with your specific GitHub info
-          const GITHUB_CONFIG = {
-            owner: "kelvinowens",
-            repo: "toccopola-grocery",
-            path: "data/menu.json",
-            branch: "gh-pages", // Change to "gh-pages" if your data folder is there
-          };
+      // 1. LOAD DATA FROM API
+      async function fetchMenu() {
+        try {
+          const response = await fetch("/api/menu");
+          if (!response.ok) throw new Error("Failed to connect to API");
 
-          // Load existing menu.json
-          fetch('/api/menu')
-            .then(res => res.json())
-            .then(data => {
-                menu = data;
-                renderTable(); // or renderMenu()
-            });
-            .catch(() => {
-              menu = [];
-              console.log("No existing menu.json found, starting fresh.");
-            });
+          // Our server returns the items array directly
+          menuItems = await response.json();
 
-          function renderTable() {
-            const table = document.getElementById("menuTable");
-            table.innerHTML = "";
+          renderTable();
+          showStatus("Data loaded successfully from MongoDB", "success");
+        } catch (err) {
+          console.error(err);
+          showStatus(
+            "Error: Could not load items. Check if server is running.",
+            "error",
+          );
+        }
+      }
 
-            menu.forEach((item, index) => {
-              const row = document.createElement("tr");
-              row.innerHTML = `
-                <td><strong>${item.name}</strong></td>
-                <td>$${item.price}</td>
-                <td><span class="badge bg-secondary">${item.category || "Uncategorized"}</span></td>
-                <td><small>${item.description || ""}</small></td>
-                <td>
-                  <button class="btn btn-sm btn-warning edit-btn" data-index="${index}">Edit</button>
-                  <button class="btn btn-sm btn-danger" onclick="deleteItem(${item.id})">Delete</button>
-                </td>
-              `;
-              table.appendChild(row);
-            });
+      // 2. RENDER THE TABLE
+      function renderTable() {
+        const tbody = document.getElementById("admin-table-body");
+        tbody.innerHTML = "";
 
-            // Safe Event Listeners for Edit Buttons
-            document.querySelectorAll(".edit-btn").forEach((btn) => {
-              btn.addEventListener("click", () => {
-                const index = btn.getAttribute("data-index");
-                editItem(menu[index]);
-              });
-            });
+        menuItems.forEach((item, index) => {
+          const row = document.createElement("tr");
+          row.innerHTML = `
+                <td><input type="text" value="${item.category}" onchange="updateItem(${index}, 'category', this.value)"></td>
+                <td><input type="text" value="${item.name}" onchange="updateItem(${index}, 'name', this.value)"></td>
+                <td><input type="number" value="${item.price}" onchange="updateItem(${index}, 'price', this.value)"></td>
+                <td><textarea onchange="updateItem(${index}, 'description', this.value)">${item.description}</textarea></td>
+                <td><button class="btn-delete" onclick="deleteItem(${index})">Delete</button></td>
+            `;
+          tbody.appendChild(row);
+        });
+      }
+
+      // 3. EDIT LOGIC
+      function updateItem(index, field, value) {
+        menuItems[index][field] = field === "price" ? parseFloat(value) : value;
+      }
+
+      function addItem() {
+        menuItems.push({
+          id: Date.now(),
+          name: "New Item",
+          price: 0,
+          category: "General",
+          description: "",
+        });
+        renderTable();
+      }
+
+      function deleteItem(index) {
+        if (confirm("Are you sure you want to delete this item?")) {
+          menuItems.splice(index, 1);
+          renderTable();
+        }
+      }
+
+      // 4. SAVE DATA TO API
+      async function saveToDatabase() {
+        showStatus("Saving...", "success");
+        try {
+          const response = await fetch("/api/menu", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(menuItems), // Send the array to our POST route
+          });
+
+          if (response.ok) {
+            showStatus("✅ All changes saved and live!", "success");
+          } else {
+            throw new Error("Save failed");
           }
+        } catch (err) {
+          showStatus("❌ Failed to save. Check internet connection.", "error");
+        }
+      }
 
-          // Add / Update Item locally in the array
-          document
-            .getElementById("menuForm")
-            .addEventListener("submit", function (e) {
-              e.preventDefault();
+      function showStatus(msg, type) {
+        statusDiv.innerText = msg;
+        statusDiv.className = `status-bar ${type}`;
+        setTimeout(() => {
+          statusDiv.style.display = "none";
+        }, 5000);
+      }
 
-              const id = document.getElementById("itemId").value;
-
-              const item = {
-                id: id ? Number(id) : Date.now(),
-                name: document.getElementById("name").value,
-                price: parseFloat(document.getElementById("price").value),
-                category: document.getElementById("category").value,
-                description: document.getElementById("description").value,
-              };
-
-              if (id) {
-                menu = menu.map((m) => (m.id == id ? item : m));
-              } else {
-                menu.push(item);
-              }
-
-              this.reset();
-              document.getElementById("itemId").value = "";
-              renderTable();
-            });
-
-          function editItem(item) {
-            document.getElementById("itemId").value = item.id;
-            document.getElementById("name").value = item.name;
-            document.getElementById("price").value = item.price;
-            document.getElementById("category").value = item.category;
-            document.getElementById("description").value = item.description;
-            window.scrollTo(0, 0); // Scroll to top to see the form
-          }
-
-          function deleteItem(id) {
-            if (confirm("Delete this item?")) {
-              menu = menu.filter((item) => item.id !== id);
-              renderTable();
-            }
-          }
-
-          async function saveToDatabase() {
-            try {
-              const response = await fetch("/api/menu", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(menu), // 'menu' is your local array
-              });
-
-              if (response.ok) {
-                alert("🚀 Menu updated in MongoDB!");
-              } else {
-                alert("Error saving to database.");
-              }
-            } catch (err) {
-              console.error(err);
-            }
-          }
-          function changeTheme(theme) {
-            document.getElementById("themeStylesheet").href =
-              `https://cdn.jsdelivr.net/npm/bootswatch@5/dist/${theme}/bootstrap.min.css`;
-            localStorage.setItem("theme", theme);
-          }
-
-          const savedTheme = localStorage.getItem("theme");
-          if (savedTheme) changeTheme(savedTheme);
+      // Initial Load
+      fetchMenu();
     </script>
   </body>
 </html>
