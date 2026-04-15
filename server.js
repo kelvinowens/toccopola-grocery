@@ -9,6 +9,15 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 
+// --- THE SLASH COLLAPSER ---
+// This fixes the "//api/menu" issue by forcing double slashes into single slashes
+app.use((req, res, next) => {
+    if (req.url.includes('//')) {
+        req.url = req.url.replace(/\/\/+/g, '/');
+    }
+    next();
+});
+
 // 2. MONGODB CONNECTION
 // Replace <password> with your actual database user password
 const MONGO_URI = "mongodb+srv://kelvinowens:Giogi006$1234!@cluster0.mongodb.net/toccopola_grocery?retryWrites=true&w=majority";
@@ -21,17 +30,14 @@ mongoose.connect(MONGO_URI)
 const menuSchema = new mongoose.Schema({
     items: Array 
 });
-
-// The third argument 'menu' forces Mongoose to use your specific collection name
 const Menu = mongoose.model('Menu', menuSchema, 'menu');
 
-// 4. API ROUTES (Must come before express.static)
+// 4. API ROUTES (Placed before static files to prevent 404s)
 
 // GET the menu data
 app.get('/api/menu', async (req, res) => {
     try {
         const data = await Menu.findOne();
-        // If data exists, return the items array, otherwise return empty array
         res.json(data ? data.items : []);
     } catch (err) {
         console.error("GET Error:", err);
@@ -57,8 +63,12 @@ app.post('/api/menu', async (req, res) => {
 });
 
 // 5. STATIC FILE SERVING
-// This tells Express to look in the 'public' folder for index.html, admin.html, etc.
 app.use(express.static(path.join(__dirname, 'public')));
+
+// Explicitly serve index.html for the main URL
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
 
 // 6. START SERVER
 const PORT = process.env.PORT || 3000;
