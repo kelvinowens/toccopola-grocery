@@ -4,37 +4,42 @@ const cors = require('cors');
 const path = require('path');
 
 const app = express();
+
+// 1. MIDDLEWARE
 app.use(express.json());
 app.use(cors());
 
-// Serve your static HTML files
-app.use(express.static(path.join(__dirname, 'public'))); 
-
-// REPLACE with your actual MongoDB Connection String from Atlas
-const MONGO_URI = "mongodb+srv://kelvinowens:Giogi006$1234!@cluster0.ddp1odw.mongodb.net/?appName=Cluster0";
+// 2. MONGODB CONNECTION
+// Replace <password> with your actual database user password
+const MONGO_URI = "mongodb+srv://kelvinowens:Giogi006$1234!@cluster0.mongodb.net/toccopola_grocery?retryWrites=true&w=majority";
 
 mongoose.connect(MONGO_URI)
   .then(() => console.log("✅ Connected to MongoDB Atlas"))
   .catch(err => console.error("❌ MongoDB Connection Error:", err));
 
-// Define the Schema
+// 3. DATABASE SCHEMA & MODEL
 const menuSchema = new mongoose.Schema({
-    items: Array // We will store the menu array here
+    items: Array 
 });
 
-const Menu = mongoose.model('Menu', menuSchema);
+// The third argument 'menu' forces Mongoose to use your specific collection name
+const Menu = mongoose.model('Menu', menuSchema, 'menu');
 
-// ROUTE: Get the menu
+// 4. API ROUTES (Must come before express.static)
+
+// GET the menu data
 app.get('/api/menu', async (req, res) => {
     try {
         const data = await Menu.findOne();
+        // If data exists, return the items array, otherwise return empty array
         res.json(data ? data.items : []);
     } catch (err) {
-        res.status(500).send(err);
+        console.error("GET Error:", err);
+        res.status(500).json({ error: "Failed to fetch menu" });
     }
 });
 
-// ROUTE: Save the menu
+// SAVE the menu data
 app.post('/api/menu', async (req, res) => {
     try {
         let data = await Menu.findOne();
@@ -44,11 +49,19 @@ app.post('/api/menu', async (req, res) => {
             data.items = req.body;
         }
         await data.save();
-        res.status(200).send({ message: "Saved Successfully" });
+        res.status(200).json({ message: "Saved successfully" });
     } catch (err) {
-        res.status(500).send(err);
+        console.error("POST Error:", err);
+        res.status(500).json({ error: "Failed to save menu" });
     }
 });
 
+// 5. STATIC FILE SERVING
+// This tells Express to look in the 'public' folder for index.html, admin.html, etc.
+app.use(express.static(path.join(__dirname, 'public')));
+
+// 6. START SERVER
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`🚀 Server running on http://localhost:${PORT}`));
+app.listen(PORT, () => {
+    console.log(`🚀 Server running on port ${PORT}`);
+});
