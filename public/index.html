@@ -3,236 +3,150 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Toccopola Grocery - Menu</title>
+    <title>Toccopola Grocery - Home</title>
 
     <link
       rel="stylesheet"
       href="https://cdn.jsdelivr.net/npm/bootswatch@5/dist/lux/bootstrap.min.css"
     />
 
-    <style>
-      body {
-        background-color: #f4f1ea; /* Slightly aged paper color */
-        color: #222;
-        font-family: "Georgia", serif;
-      }
+    <link rel="stylesheet" href="styles.css" />
 
-      .menu-container {
-        max-width: 1000px;
-        margin: 40px auto;
-        padding: 20px;
-        border: 1px solid #000;
-        background-color: #fff;
-        box-shadow: 10px 10px 0px #000;
-      }
-
-      .header-main {
-        text-align: center;
-        border-bottom: 4px double #000;
-        margin-bottom: 30px;
-        padding-bottom: 10px;
-      }
-
-      .header-main h1 {
-        font-weight: 900;
-        font-size: 3.5rem;
-        text-transform: uppercase;
-        letter-spacing: -1px;
-      }
-
-      /* Newspaper Grid Layout */
-      #menu-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-        gap: 40px;
-      }
-
-      .category-section {
-        margin-bottom: 30px;
-      }
-
-      .category-title {
-        border-bottom: 2px solid #000;
-        font-weight: bold;
-        text-transform: uppercase;
-        margin-bottom: 15px;
-        padding-bottom: 5px;
-        font-size: 1.5rem;
-      }
-
-      .menu-item {
-        margin-bottom: 15px;
-      }
-
-      .item-header {
-        display: flex;
-        justify-content: space-between;
-        font-weight: bold;
-        font-size: 1.1rem;
-      }
-
-      .item-description {
-        font-size: 0.9rem;
-        font-style: italic;
-        color: #555;
-        margin: 0;
-      }
-
-      .category-footer-note {
-        font-size: 0.85rem;
-        font-style: italic;
-        margin-top: 10px;
-        text-align: center;
-        color: #444;
-      }
-
-      /* Specific style for the SIDES box */
-      .sides-box {
-        border: 2px solid #000;
-        padding: 15px;
-        background-color: #f9f9f9;
-      }
-
-      .sides-list {
-        list-style: none;
-        padding: 0;
-        display: flex;
-        flex-wrap: wrap;
-        gap: 8px;
-        justify-content: center;
-      }
-
-      .sides-list li {
-        font-weight: bold;
-        text-transform: uppercase;
-        font-size: 0.85rem;
-      }
-
-      .sides-list li:not(:last-child):after {
-        content: " •";
-        margin-left: 8px;
-      }
-
-      @media (max-width: 600px) {
-        .header-main h1 {
-          font-size: 2rem;
-        }
-        .menu-container {
-          margin: 10px;
-          padding: 15px;
-        }
-      }
-    </style>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    />
   </head>
   <body>
-    <div class="menu-container">
-      <header class="header-main">
-        <h1>Toccopola Grocery</h1>
-        <p>
-          A family owned and operated restaurant.. bringing quality food and
-          service to your table!
-        </p>
-      </header>
-
-      <div id="menu-grid"></div>
-
-      <div class="category-section sides-box mt-5">
-        <h2 class="category-title text-center">Sides</h2>
-        <ul class="sides-list">
-          <li>Crinkle-Cut French Fries</li>
-          <li>Curly-Cut Fries</li>
-          <li>Steak Fries</li>
-          <li>Baked Potato</li>
-          <li>Baked Sweet Potato</li>
-          <li>Fried Okra</li>
-          <li>Side Salad</li>
-          <li>Cole Slaw</li>
-          <li>Hushpuppies</li>
-          <li>Tater Tots</li>
-        </ul>
-        <p class="text-center mt-2"><small>Extra sides: $5.00 each</small></p>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary mb-0">
+      <div class="container-fluid">
+        <a class="navbar-brand text-warning fw-bold" href="index.html"
+          >Toccopola Grocery</a
+        >
+        <div class="ms-auto d-flex align-items-center">
+          <ul class="navbar-nav d-flex flex-row gap-3">
+            <li class="nav-item">
+              <a class="nav-link active" href="index.html">Home</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="menu.html">Menu</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="about.html">About</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="contact.html">Contact</a>
+            </li>
+          </ul>
+          <a href="#" class="ms-3 text-white"
+            ><i class="fa-brands fa-facebook fa-lg"></i
+          ></a>
+        </div>
       </div>
+    </nav>
 
-      <footer class="mt-5 text-center text-muted">
-        <hr />
-        <p>© 2026 Toccopola Grocery | Call ahead: (662)236-2139</p>
-      </footer>
+    <div
+      class="bg-dark text-white text-center py-5 shadow-lg"
+      style="
+        background:
+          linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)),
+          url(&quot;https://images.unsplash.com/photo-1555396273-367ea4eb4db5?ixlib=rb-4.0.3&auto=format&fit=crop&w=1350&q=80&quot;);
+        background-size: cover;
+        background-position: center;
+      "
+    >
+      <div class="container py-5">
+        <h1 class="display-1 fw-900 text-uppercase">Toccopola Grocery</h1>
+        <p class="lead mb-4 fw-bold">Steaks • Catfish • Southern Hospitality</p>
+        <a
+          href="menu.html"
+          class="btn btn-warning btn-lg px-5 py-3 fw-bold text-dark text-uppercase"
+          >View The Full Menu</a
+        >
+      </div>
     </div>
 
-    <script>
-      // Use the relative path to talk to your server.js API
-      const API_URL = window.location.origin + "/api/menu";
+    <div class="container my-5">
+      <div class="row g-4">
+        <div class="col-md-7">
+          <div class="menu-container p-4 h-100">
+            <h2
+              class="category-title border-bottom border-3 border-dark pb-2 mb-3"
+            >
+              A Family Tradition
+            </h2>
+            <p>
+              At Toccopola Grocery, we specialize in high-quality food served
+              with true southern hospitality. From our hand-patted burgers to
+              our fresh-cut Ribeyes, every plate is prepared to order.
+            </p>
+            <p>
+              We invite you to join us during our weekend service for a dining
+              experience that feels like home.
+            </p>
+            <div class="mt-4">
+              <a href="menu.html" class="btn btn-dark text-uppercase fw-bold"
+                >Browse Our Menu</a
+              >
+            </div>
+          </div>
+        </div>
 
-      async function loadMenu() {
-        const grid = document.getElementById("menu-grid");
+        <div class="col-md-5">
+          <div class="sides-box h-100 border-3">
+            <h2 class="text-center fw-bold text-uppercase mb-4">
+              Service Hours
+            </h2>
+            <div class="text-center px-3">
+              <div class="mb-4">
+                <h5 class="fw-900 text-primary mb-1">THURSDAY</h5>
+                <p class="h4 fw-bold">5:00 PM — CLOSE</p>
+              </div>
+              <div class="mb-4">
+                <h5 class="fw-900 text-primary mb-1">FRIDAY</h5>
+                <p class="h4 fw-bold">5:00 PM — CLOSE</p>
+              </div>
+              <div class="mb-4">
+                <h5 class="fw-900 text-primary mb-1">SATURDAY</h5>
+                <p class="h4 fw-bold">5:00 PM — CLOSE</p>
+              </div>
+              <div class="pt-2 border-top border-dark mt-2">
+                <p class="small fst-italic mb-0">
+                  Closed Sunday through Wednesday
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
 
-        try {
-          const response = await fetch(API_URL);
-          const menuItems = await response.json();
+      <div class="menu-container mt-5 p-4 text-center">
+        <h2 class="category-title border-bottom border-3 border-dark pb-2 mb-4">
+          What We're Known For
+        </h2>
+        <div class="row">
+          <div class="col-md-4">
+            <i class="fa-solid fa-utensils fa-2x mb-2"></i>
+            <h4 class="fw-bold text-uppercase">Fresh Ribeyes</h4>
+            <p class="small">Hand-cut and seasoned.</p>
+          </div>
+          <div class="col-md-4">
+            <i class="fa-solid fa-fish fa-2x mb-2"></i>
+            <h4 class="fw-bold text-uppercase">Golden Catfish</h4>
+            <p class="small">Hand-battered & fried.</p>
+          </div>
+          <div class="col-md-4">
+            <i class="fa-solid fa-burger fa-2x mb-2"></i>
+            <h4 class="fw-bold text-uppercase">Hand-Patted</h4>
+            <p class="small">Our local favorite burgers.</p>
+          </div>
+        </div>
+      </div>
+    </div>
 
-          // Group items by category
-          const groupedMenu = menuItems.reduce((acc, item) => {
-            const cat = item.category || "General";
-            if (!acc[cat]) acc[cat] = [];
-            acc[cat].push(item);
-            return acc;
-          }, {});
-
-          // Generate HTML for each category
-          grid.innerHTML = "";
-          Object.keys(groupedMenu).forEach((category) => {
-            const section = document.createElement("div");
-            section.className = "category-section";
-
-            let itemsHtml = "";
-            groupedMenu[category].forEach((item) => {
-              itemsHtml += `
-                            <div class="menu-item">
-                                <div class="item-header">
-                                    <span class="item-name">${item.name}</span>
-                                    <span class="item-price">$${item.price.toFixed(2)}</span>
-                                </div>
-                                ${item.description ? `<p class="item-description">${item.description}</p>` : ""}
-                            </div>
-                        `;
-            });
-
-            // Hard-coded footer notes for specific categories
-            let footerNote = "";
-            const catLower = category.toLowerCase();
-            if (catLower.includes("salad")) {
-              footerNote = `<p class="category-footer-note">* Add bacon and egg to any salad for $2.00</p>`;
-            } else if (catLower.includes("ribeye")) {
-              footerNote = `<p class="category-footer-note">Juicy, fresh cut, seasoned & cooked to your liking. Served w/ choice of two sides.</p>`;
-            } else if (catLower.includes("chicken tenders")) {
-              footerNote = `<p class="category-footer-note">Our hand-cut breast tenders are a local favorite. Fried or grilled served with choice of two sides.</p>`;
-            } else if (catLower.includes("catfish")) {
-              footerNote = `<p class="category-footer-note">Hand battered and deep fried. Served with choice of two sides and hushpuppies. *Add $2 for grilled. Pan-grilled with house seasoning.</p>`;
-            } else if (catLower.includes("shrimp")) {
-              footerNote = `<p class="category-footer-note">Served with choice of two sides and hushpuppies. Grilled shrimp is pan-grilled and seasoned with house seasoning</p>`;
-            } else if (catLower.includes("desserts")) {
-              footerNote = `<p class="category-footer-note">Prices vary on availability. All of our desserts are handmade southern sweetness.</p>`;
-            } else if (catLower.includes("burgers & such")) {
-              footerNote = `<p class="category-footer-note">Our burgers are hand-patted and seasoned to perfection. Served with choice of one side.</p>`;
-            } else if (catLower.includes("kids meals")) {
-              footerNote = `<p class="category-footer-note">Served with choice of one side.</p>`;
-            }
-
-            section.innerHTML = `
-                        <h2 class="category-title">${category}</h2>
-                        ${itemsHtml}
-                        ${footerNote}
-                    `;
-            grid.appendChild(section);
-          });
-        } catch (err) {
-          console.error("Error loading menu:", err);
-          grid.innerHTML =
-            "<p class='text-center'>Unable to load menu at this time.</p>";
-        }
-      }
-
-      loadMenu();
-    </script>
+    <footer class="py-4 text-center text-muted bg-white border-top border-dark">
+      <p class="mb-1 fw-bold text-dark">TOCCOPOLA GROCERY</p>
+      <p class="mb-0 small">Toccopola, MS | (662) 236-2139</p>
+    </footer>
   </body>
 </html>

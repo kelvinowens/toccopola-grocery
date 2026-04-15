@@ -3,227 +3,186 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Oxford 3D Prints - Admin Dashboard</title>
-    <style>
-      body {
-        font-family: sans-serif;
-        margin: 20px;
-        background: #f4f4f4;
-      }
-      .container {
-        max-width: 900px;
-        margin: auto;
-        background: white;
-        padding: 20px;
-        border-radius: 8px;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-      }
-      h1 {
-        color: #333;
-      }
-      .status-bar {
-        padding: 10px;
-        margin-bottom: 20px;
-        border-radius: 4px;
-        font-weight: bold;
-        display: none;
-      }
-      .success {
-        background: #d4edda;
-        color: #155724;
-        display: block;
-      }
-      .error {
-        background: #f8d7da;
-        color: #721c24;
-        display: block;
-      }
-      table {
-        width: 100%;
-        border-collapse: collapse;
-        margin-top: 20px;
-      }
-      th,
-      td {
-        border: 1px solid #ddd;
-        padding: 12px;
-        text-align: left;
-      }
-      th {
-        background: #007bff;
-        color: white;
-      }
-      input,
-      textarea {
-        width: 90%;
-        padding: 8px;
-        border: 1px solid #ccc;
-        border-radius: 4px;
-      }
-      .actions {
-        margin-top: 20px;
-        display: flex;
-        gap: 10px;
-      }
-      button {
-        padding: 10px 15px;
-        cursor: pointer;
-        border: none;
-        border-radius: 4px;
-        transition: 0.3s;
-      }
-      .btn-add {
-        background: #28a745;
-        color: white;
-      }
-      .btn-save {
-        background: #007bff;
-        color: white;
-        font-weight: bold;
-      }
-      .btn-delete {
-        background: #dc3545;
-        color: white;
-      }
-      button:hover {
-        opacity: 0.8;
-      }
-    </style>
+    <title>Toccopola Admin - Control Panel</title>
+
+    <link
+      id="theme-link"
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootswatch@5/dist/lux/bootstrap.min.css"
+    />
+    <link rel="stylesheet" href="styles.css" />
   </head>
-  <body>
-    <div class="container">
-      <h1>Inventory Manager</h1>
-      <div id="status" class="status-bar"></div>
+  <body class="bg-light">
+    <div class="container py-5">
+      <div class="menu-container shadow-lg p-4">
+        <h1
+          class="text-center fw-900 text-uppercase border-bottom border-4 border-dark pb-3 mb-5"
+        >
+          Admin Control Panel
+        </h1>
 
-      <div class="actions">
-        <button class="btn-add" onclick="addItem()">+ Add New Item</button>
-        <button class="btn-save" onclick="saveToDatabase()">
-          💾 Save All Changes to Live Site
-        </button>
-      </div>
+        <div class="card border-dark mb-5">
+          <div class="card-header bg-dark text-white">
+            <h4 class="mb-0 text-uppercase fw-bold">Site Appearance</h4>
+          </div>
+          <div class="card-body">
+            <div class="row align-items-end">
+              <div class="col-md-8">
+                <label class="form-label fw-bold small"
+                  >SELECT BOOTSWATCH THEME</label
+                >
+                <select id="themeSelector" class="form-select border-dark">
+                  <option value="lux">Lux (Modern / Sharp)</option>
+                  <option value="slate">Slate (Dark / Heavy)</option>
+                  <option value="solar">Solar (Aged / Premium)</option>
+                  <option value="journal">Journal (Classic Paper)</option>
+                  <option value="flatly">Flatly (Clean / Colorful)</option>
+                </select>
+              </div>
+              <div class="col-md-4 mt-3">
+                <button
+                  onclick="saveTheme()"
+                  class="btn btn-dark w-100 fw-bold"
+                >
+                  APPLY THEME
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
 
-      <table>
-        <thead>
-          <tr>
-            <th>Category</th>
-            <th>Name</th>
-            <th>Price ($)</th>
-            <th>Description</th>
-            <th>Action</th>
-          </tr>
-        </thead>
-        <tbody id="admin-table-body"></tbody>
-      </table>
+        <div class="card border-dark">
+          <div
+            class="card-header bg-dark text-white d-flex justify-content-between align-items-center"
+          >
+            <h4 class="mb-0 text-uppercase fw-bold">Menu Manager</h4>
+            <span class="badge bg-warning text-dark">MongoDB Live</span>
+          </div>
+          <div class="card-body">
+            <form
+              id="menu-form"
+              class="row g-3 mb-5 p-3 bg-light border border-dark"
+            >
+              <div class="col-md-4">
+                <input
+                  type="text"
+                  id="itemName"
+                  class="form-control"
+                  placeholder="Item Name (or leave blank for gap)"
+                  required
+                />
+              </div>
+              <div class="col-md-3">
+                <input
+                  type="text"
+                  id="itemCategory"
+                  class="form-control"
+                  placeholder="Category"
+                  required
+                />
+              </div>
+              <div class="col-md-2">
+                <input
+                  type="number"
+                  id="itemPrice"
+                  class="form-control"
+                  placeholder="Price (0 to hide)"
+                  step="0.01"
+                />
+              </div>
+              <div class="col-md-3">
+                <button type="submit" class="btn btn-success w-100 fw-bold">
+                  ADD ITEM
+                </button>
+              </div>
+              <div class="col-12">
+                <textarea
+                  id="itemDescription"
+                  class="form-control"
+                  placeholder="Description (Optional)"
+                ></textarea>
+              </div>
+            </form>
 
-      <div class="actions" style="margin-top: 30px; padding-bottom: 50px">
-        <button class="btn-add" onclick="addItem()">+ Add New Item</button>
-        <button class="btn-save" onclick="saveToDatabase()">
-          💾 Save All Changes to Live Site
-        </button>
+            <div class="table-responsive">
+              <table class="table table-hover border border-dark">
+                <thead class="table-dark">
+                  <tr>
+                    <th>Category</th>
+                    <th>Name</th>
+                    <th>Price</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody id="admin-menu-list"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
 
     <script>
-      let menuItems = [];
-      const statusDiv = document.getElementById("status");
+      let currentMenuItems = []; // Local copy of the full menu
 
-      // 1. LOAD DATA FROM API
-      async function fetchMenu() {
-        try {
-          const response = await fetch("/api/menu");
-          if (!response.ok) throw new Error("Failed to connect to API");
-
-          const data = await response.json();
-          // Handle both array and object formats just in case
-          menuItems = Array.isArray(data) ? data : data.items || [];
-
-          renderTable();
-          showStatus("Data loaded from MongoDB", "success");
-        } catch (err) {
-          console.error(err);
-          showStatus("Error: Could not load items.", "error");
-        }
+      async function fetchAdminMenu() {
+        const res = await fetch("/api/menu");
+        currentMenuItems = await res.json();
+        renderTable();
       }
 
-      // 2. RENDER THE TABLE
       function renderTable() {
-        const tbody = document.getElementById("admin-table-body");
-        if (!tbody) return;
-        tbody.innerHTML = "";
-
-        menuItems.forEach((item, index) => {
-          const row = document.createElement("tr");
-          row.innerHTML = `
-                <td><input type="text" value="${item.category || ""}" oninput="updateItem(${index}, 'category', this.value)"></td>
-                <td><input type="text" value="${item.name || ""}" oninput="updateItem(${index}, 'name', this.value)"></td>
-                <td><input type="number" value="${item.price || 0}" oninput="updateItem(${index}, 'price', this.value)"></td>
-                <td><textarea oninput="updateItem(${index}, 'description', this.value)">${item.description || ""}</textarea></td>
-                <td><button class="btn-delete" onclick="deleteItem(${index})">Delete</button></td>
-            `;
-          tbody.appendChild(row);
-        });
+        const list = document.getElementById("admin-menu-list");
+        list.innerHTML = currentMenuItems
+          .map(
+            (item, index) => `
+            <tr>
+                <td>${item.category}</td>
+                <td>${item.name || "BLANK LINE"}</td>
+                <td>$${(item.price || 0).toFixed(2)}</td>
+                <td><button onclick="deleteItem(${index})" class="btn btn-danger btn-sm">DELETE</button></td>
+            </tr>
+        `,
+          )
+          .join("");
       }
 
-      // 3. EDIT LOGIC
-      function updateItem(index, field, value) {
-        if (field === "price") {
-          menuItems[index][field] = parseFloat(value) || 0;
-        } else {
-          menuItems[index][field] = value;
-        }
-      }
+      document
+        .getElementById("menu-form")
+        .addEventListener("submit", async (e) => {
+          e.preventDefault();
+          const newItem = {
+            name: document.getElementById("itemName").value,
+            category: document.getElementById("itemCategory").value,
+            price: parseFloat(document.getElementById("itemPrice").value) || 0,
+            description: document.getElementById("itemDescription").value,
+          };
 
-      function addItem() {
-        // We create a clean object with all required keys
-        const newItem = {
-          id: Date.now(),
-          name: "",
-          price: 0,
-          category: "",
-          description: "",
-        };
+          // Add to the local list
+          currentMenuItems.push(newItem);
 
-        menuItems.push(newItem);
-        renderTable(); // Re-draw the table to show the new empty row
-      }
-
-      function deleteItem(index) {
-        if (confirm("Delete this item?")) {
-          menuItems.splice(index, 1);
-          renderTable();
-        }
-      }
-
-      // 4. SAVE DATA TO API
-      async function saveToDatabase() {
-        showStatus("Saving...", "success");
-        try {
-          const response = await fetch("/api/menu", {
+          // Save the ENTIRE list to the server
+          await fetch("/api/menu", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(menuItems),
+            body: JSON.stringify(currentMenuItems),
           });
 
-          if (response.ok) {
-            showStatus("✅ Saved and live!", "success");
-          } else {
-            throw new Error("Save failed");
-          }
-        } catch (err) {
-          showStatus("❌ Failed to save.", "error");
-        }
+          document.getElementById("menu-form").reset();
+          renderTable();
+        });
+
+      async function deleteItem(index) {
+        currentMenuItems.splice(index, 1); // Remove from local list
+        await fetch("/api/menu", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(currentMenuItems),
+        });
+        renderTable();
       }
 
-      function showStatus(msg, type) {
-        statusDiv.style.display = "block";
-        statusDiv.innerText = msg;
-        statusDiv.className = `status-bar ${type}`;
-        setTimeout(() => {
-          statusDiv.style.display = "none";
-        }, 3000);
-      }
-
-      fetchMenu();
+      fetchAdminMenu();
     </script>
   </body>
 </html>

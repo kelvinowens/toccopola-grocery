@@ -1,0 +1,173 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Menu - Toccopola Grocery</title>
+
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootswatch@5/dist/lux/bootstrap.min.css"
+    />
+
+    <link rel="stylesheet" href="styles.css" />
+
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    />
+  </head>
+  <body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary mb-4">
+      <div class="container-fluid">
+        <a class="navbar-brand text-warning fw-bold" href="index.html"
+          >Toccopola Grocery</a
+        >
+        <div class="ms-auto d-flex align-items-center">
+          <ul class="navbar-nav d-flex flex-row gap-3">
+            <li class="nav-item">
+              <a class="nav-link" href="index.html">Home</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link active" href="menu.html">Menu</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="about.html">About</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="contact.html">Contact</a>
+            </li>
+          </ul>
+          <a href="#" class="ms-3 text-white"
+            ><i class="fa-brands fa-facebook fa-lg"></i
+          ></a>
+        </div>
+      </div>
+    </nav>
+
+    <div class="container">
+      <div class="menu-container shadow-sm">
+        <header class="header-main">
+          <h1>Toccopola Grocery</h1>
+          <p class="lead text-uppercase fw-bold">
+            Quality food and service to your table!
+          </p>
+        </header>
+
+        <div id="menu-grid">
+          <p class="text-center">Loading fresh data...</p>
+        </div>
+
+        <div class="category-section sides-box mt-5">
+          <h2 class="category-title text-center" style="border-bottom: none">
+            Sides
+          </h2>
+          <ul class="sides-list">
+            <li>Crinkle-Cut French Fries</li>
+            <li>Curly-Cut Fries</li>
+            <li>Steak Fries</li>
+            <li>Baked Potato</li>
+            <li>Baked Sweet Potato</li>
+            <li>Fried Okra</li>
+            <li>Side Salad</li>
+            <li>Cole Slaw</li>
+            <li>Hushpuppies</li>
+            <li>Tater Tots</li>
+          </ul>
+          <p class="text-center mt-3 small text-muted">
+            Extra sides: $5.00 each
+          </p>
+        </div>
+
+        <footer class="mt-5 text-center text-muted">
+          <hr />
+          <p>© 2026 Toccopola Grocery | Call ahead: (662)236-2139</p>
+        </footer>
+      </div>
+    </div>
+
+    <script>
+      async function loadMenu() {
+        const grid = document.getElementById("menu-grid");
+
+        try {
+          const response = await fetch("/api/menu");
+          if (!response.ok) throw new Error("API Connection Failed");
+
+          const menuItems = await response.json();
+
+          const groupedMenu = menuItems.reduce((acc, item) => {
+            const cat = item.category || "General";
+            if (!acc[cat]) acc[cat] = [];
+            acc[cat].push(item);
+            return acc;
+          }, {});
+
+          grid.innerHTML = "";
+
+          Object.keys(groupedMenu).forEach((category) => {
+            const section = document.createElement("div");
+            section.className = "category-section mb-5";
+
+            let itemsHtml = "";
+            groupedMenu[category].forEach((item) => {
+              // Check if item is a pure blank spacer (No name, no desc, 0 price)
+              const isBlank =
+                !item.name &&
+                !item.description &&
+                (!item.price || item.price === 0);
+
+              if (isBlank) {
+                itemsHtml += `<div style="height: 1.2rem;"></div>`;
+              } else {
+                itemsHtml += `
+                                <div class="menu-item mb-3">
+                                    <div class="item-header d-flex justify-content-between fw-bold text-uppercase">
+                                        <span>${item.name || ""}</span>
+                                        <span>${item.price > 0 ? "$" + item.price.toFixed(2) : ""}</span>
+                                    </div>
+                                    ${item.description ? `<p class="item-description small text-muted fst-italic m-0">${item.description}</p>` : ""}
+                                </div>
+                            `;
+              }
+            });
+
+            // Personality notes logic
+            let footerNote = "";
+            const catLower = category.toLowerCase();
+            if (catLower.includes("salad")) {
+              footerNote = `<p class="category-footer-note">* Add bacon and egg to any salad for $2.00</p>`;
+            } else if (catLower.includes("ribeye")) {
+              footerNote = `<p class="category-footer-note">Juicy, fresh cut, seasoned & cooked to your liking. Served w/ choice of two sides.</p>`;
+            } else if (catLower.includes("chicken tenders")) {
+              footerNote = `<p class="category-footer-note">Our hand-cut breast tenders are a local favorite. Fried or grilled served with choice of two sides.</p>`;
+            } else if (catLower.includes("catfish")) {
+              footerNote = `<p class="category-footer-note">Hand battered and deep fried. Served with choice of two sides and hushpuppies. *Add $2 for grilled. Pan-grilled with house seasoning.</p>`;
+            } else if (catLower.includes("shrimp")) {
+              footerNote = `<p class="category-footer-note">Served with choice of two sides and hushpuppies. Grilled shrimp is pan-grilled and seasoned with house seasoning</p>`;
+            } else if (catLower.includes("desserts")) {
+              footerNote = `<p class="category-footer-note">Prices vary on availability. All of our desserts are handmade southern sweetness.</p>`;
+            } else if (catLower.includes("burgers & such")) {
+              footerNote = `<p class="category-footer-note">Our burgers are hand-patted and seasoned to perfection. Served with choice of one side.</p>`;
+            } else if (catLower.includes("kids meals")) {
+              footerNote = `<p class="category-footer-note">Served with choice of one side.</p>`;
+            }
+
+            section.innerHTML = `
+                        <h2 class="category-title border-bottom border-3 border-dark pb-2 mb-3 text-uppercase fw-bold">${category}</h2>
+                        ${itemsHtml}
+                        ${footerNote}
+                    `;
+            grid.appendChild(section);
+          });
+        } catch (err) {
+          console.error("Load Error:", err);
+          grid.innerHTML =
+            "<p class='text-center text-danger'>Unable to load menu. Please refresh.</p>";
+        }
+      }
+
+      loadMenu();
+    </script>
+  </body>
+</html>

@@ -10,7 +10,6 @@ app.use(express.json());
 app.use(cors());
 
 // --- THE SLASH COLLAPSER ---
-// This fixes the "//api/menu" issue by forcing double slashes into single slashes
 app.use((req, res, next) => {
     if (req.url.includes('//')) {
         req.url = req.url.replace(/\/\/+/g, '/');
@@ -19,7 +18,6 @@ app.use((req, res, next) => {
 });
 
 // 2. MONGODB CONNECTION
-// Replace <password> with your actual database user password
 const MONGO_URI = "mongodb+srv://kelvinowens:Giogi006$1234!@cluster0.ddp1odw.mongodb.net/toccopola_grocery?appName=Cluster0";
 
 mongoose.connect(MONGO_URI)
@@ -27,14 +25,15 @@ mongoose.connect(MONGO_URI)
   .catch(err => console.error("❌ MongoDB Connection Error:", err));
 
 // 3. DATABASE SCHEMA & MODEL
+// This treats the entire menu as one array inside a single document
 const menuSchema = new mongoose.Schema({
     items: Array 
 });
 const Menu = mongoose.model('Menu', menuSchema, 'menu');
 
-// 4. API ROUTES (Placed before static files to prevent 404s)
+// 4. API ROUTES
 
-// GET the menu data
+// GET: Returns the items array from the single menu document
 app.get('/api/menu', async (req, res) => {
     try {
         const data = await Menu.findOne();
@@ -45,27 +44,22 @@ app.get('/api/menu', async (req, res) => {
     }
 });
 
-// SAVE the menu data
+// POST: Replaces the entire items array with the new version from Admin
 app.post('/api/menu', async (req, res) => {
     try {
-        let data = await Menu.findOne();
-        if (!data) {
-            data = new Menu({ items: req.body });
-        } else {
-            data.items = req.body;
-        }
-        await data.save();
-        res.status(200).json({ message: "Saved successfully" });
+        // findOneAndUpdate with upsert:true finds the one document and replaces its 'items' 
+        // with the new list. If it doesn't exist, it creates it.
+        await Menu.findOneAndUpdate({}, { items: req.body }, { upsert: true, new: true });
+        res.status(200).json({ message: "Menu updated successfully" });
     } catch (err) {
         console.error("POST Error:", err);
-        res.status(500).json({ error: "Failed to save menu" });
+        res.status(400).json({ message: err.message });
     }
 });
 
 // 5. STATIC FILE SERVING
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Explicitly serve index.html for the main URL
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
