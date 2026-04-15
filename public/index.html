@@ -1,0 +1,223 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Toccopola Grocery - Menu</title>
+
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootswatch@5/dist/lux/bootstrap.min.css"
+    />
+
+    <style>
+      body {
+        background-color: #f4f1ea; /* Slightly aged paper color */
+        color: #222;
+        font-family: "Georgia", serif;
+      }
+
+      .menu-container {
+        max-width: 1000px;
+        margin: 40px auto;
+        padding: 20px;
+        border: 1px solid #000;
+        background-color: #fff;
+        box-shadow: 10px 10px 0px #000;
+      }
+
+      .header-main {
+        text-align: center;
+        border-bottom: 4px double #000;
+        margin-bottom: 30px;
+        padding-bottom: 10px;
+      }
+
+      .header-main h1 {
+        font-weight: 900;
+        font-size: 3.5rem;
+        text-transform: uppercase;
+        letter-spacing: -1px;
+      }
+
+      /* Newspaper Grid Layout */
+      #menu-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 40px;
+      }
+
+      .category-section {
+        margin-bottom: 30px;
+      }
+
+      .category-title {
+        border-bottom: 2px solid #000;
+        font-weight: bold;
+        text-transform: uppercase;
+        margin-bottom: 15px;
+        padding-bottom: 5px;
+        font-size: 1.5rem;
+      }
+
+      .menu-item {
+        margin-bottom: 15px;
+      }
+
+      .item-header {
+        display: flex;
+        justify-content: space-between;
+        font-weight: bold;
+        font-size: 1.1rem;
+      }
+
+      .item-description {
+        font-size: 0.9rem;
+        font-style: italic;
+        color: #555;
+        margin: 0;
+      }
+
+      .category-footer-note {
+        font-size: 0.85rem;
+        font-style: italic;
+        margin-top: 10px;
+        text-align: center;
+        color: #444;
+      }
+
+      /* Specific style for the SIDES box */
+      .sides-box {
+        border: 2px solid #000;
+        padding: 15px;
+        background-color: #f9f9f9;
+      }
+
+      .sides-list {
+        list-style: none;
+        padding: 0;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        justify-content: center;
+      }
+
+      .sides-list li {
+        font-weight: bold;
+        text-transform: uppercase;
+        font-size: 0.85rem;
+      }
+
+      .sides-list li:not(:last-child):after {
+        content: " •";
+        margin-left: 8px;
+      }
+
+      @media (max-width: 600px) {
+        .header-main h1 {
+          font-size: 2rem;
+        }
+        .menu-container {
+          margin: 10px;
+          padding: 15px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="menu-container">
+      <header class="header-main">
+        <h1>Toccopola Grocery</h1>
+        <p>Hot Deli • Fresh Meats • Friendly Service</p>
+      </header>
+
+      <div id="menu-grid"></div>
+
+      <div class="category-section sides-box mt-5">
+        <h2 class="category-title text-center">Sides</h2>
+        <ul class="sides-list">
+          <li>French Fries</li>
+          <li>Baked Potato</li>
+          <li>Fried Okra</li>
+          <li>Side Salad</li>
+          <li>Cole Slaw</li>
+          <li>Hushpuppies</li>
+          <li>Tater Tots</li>
+        </ul>
+        <p class="text-center mt-2"><small>Extra sides: $3.00 each</small></p>
+      </div>
+
+      <footer class="mt-5 text-center text-muted">
+        <hr />
+        <p>© 2026 Toccopola Grocery | Call ahead: (555) 123-4567</p>
+      </footer>
+    </div>
+
+    <script>
+      // Use the relative path to talk to your server.js API
+      const API_URL = "/api/menu";
+
+      async function loadMenu() {
+        const grid = document.getElementById("menu-grid");
+
+        try {
+          const response = await fetch(API_URL);
+          const menuItems = await response.json();
+
+          // Group items by category
+          const groupedMenu = menuItems.reduce((acc, item) => {
+            const cat = item.category || "General";
+            if (!acc[cat]) acc[cat] = [];
+            acc[cat].push(item);
+            return acc;
+          }, {});
+
+          // Generate HTML for each category
+          grid.innerHTML = "";
+          Object.keys(groupedMenu).forEach((category) => {
+            const section = document.createElement("div");
+            section.className = "category-section";
+
+            let itemsHtml = "";
+            groupedMenu[category].forEach((item) => {
+              itemsHtml += `
+                            <div class="menu-item">
+                                <div class="item-header">
+                                    <span class="item-name">${item.name}</span>
+                                    <span class="item-price">$${item.price.toFixed(2)}</span>
+                                </div>
+                                ${item.description ? `<p class="item-description">${item.description}</p>` : ""}
+                            </div>
+                        `;
+            });
+
+            // Hard-coded footer notes for specific categories
+            let footerNote = "";
+            const catLower = category.toLowerCase();
+            if (catLower.includes("salad")) {
+              footerNote = `<p class="category-footer-note">* Add bacon and egg to any salad for $2.00</p>`;
+            } else if (
+              catLower.includes("catfish") ||
+              catLower.includes("ribeye")
+            ) {
+              footerNote = `<p class="category-footer-note">Served with choice of two sides and hushpuppies</p>`;
+            }
+
+            section.innerHTML = `
+                        <h2 class="category-title">${category}</h2>
+                        ${itemsHtml}
+                        ${footerNote}
+                    `;
+            grid.appendChild(section);
+          });
+        } catch (err) {
+          console.error("Error loading menu:", err);
+          grid.innerHTML =
+            "<p class='text-center'>Unable to load menu at this time.</p>";
+        }
+      }
+
+      loadMenu();
+    </script>
+  </body>
+</html>

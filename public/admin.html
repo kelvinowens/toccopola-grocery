@@ -1,0 +1,241 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin Dashboard - Toccopola Grocery</title>
+
+    <link
+      id="themeStylesheet"
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootswatch@5/dist/lux/bootstrap.min.css"
+    />
+
+    <style>
+      body {
+        padding: 20px;
+        background-color: #f8f9fa;
+      }
+      .card {
+        border-radius: 12px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      }
+      .table img {
+        max-width: 50px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>🍽️ Admin Dashboard</h2>
+        <select class="form-select w-auto" onchange="changeTheme(this.value)">
+          <option value="lux">Lux</option>
+          <option value="darkly">Darkly</option>
+          <option value="cosmo">Cosmo</option>
+          <option value="cyborg">Cyborg</option>
+          <option value="minty">Minty</option>
+        </select>
+      </div>
+
+      <div class="card mb-4">
+        <div class="card-body">
+          <h5>Add / Edit Menu Item</h5>
+          <form id="menuForm">
+            <input type="hidden" id="itemId" />
+            <div class="row g-2">
+              <div class="col-md-4">
+                <input
+                  type="text"
+                  id="name"
+                  class="form-control"
+                  placeholder="Item Name"
+                  required
+                />
+              </div>
+              <div class="col-md-2">
+                <input
+                  type="number"
+                  step="0.01"
+                  id="price"
+                  class="form-control"
+                  placeholder="Price"
+                  required
+                />
+              </div>
+              <div class="col-md-3">
+                <input
+                  type="text"
+                  id="category"
+                  class="form-control"
+                  placeholder="Category (e.g. Starters, Catfish)"
+                  required
+                />
+              </div>
+              <div class="col-md-3">
+                <input
+                  type="text"
+                  id="description"
+                  class="form-control"
+                  placeholder="Description"
+                />
+              </div>
+            </div>
+            <button class="btn btn-primary mt-3">Update List Locally</button>
+          </form>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <h5>Current Menu Items</h5>
+            <button class="btn btn-success" onclick="saveToGitHub()">
+              🚀 Push Changes to GitHub
+            </button>
+          </div>
+          <table class="table table-striped align-middle">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Price</th>
+                <th>Category</th>
+                <th>Description</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="menuTable"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="mt-4 text-center">
+        <small class="text-muted"
+          >Note: "Push Changes" updates the live site. Changes take ~60s to
+          appear.</small
+        >
+      </div>
+    </div>
+
+    <script>
+          let menu = [];
+
+          // Update these with your specific GitHub info
+          const GITHUB_CONFIG = {
+            owner: "kelvinowens",
+            repo: "toccopola-grocery",
+            path: "data/menu.json",
+            branch: "gh-pages", // Change to "gh-pages" if your data folder is there
+          };
+
+          // Load existing menu.json
+          fetch('/api/menu')
+            .then(res => res.json())
+            .then(data => {
+                menu = data;
+                renderTable(); // or renderMenu()
+            });
+            .catch(() => {
+              menu = [];
+              console.log("No existing menu.json found, starting fresh.");
+            });
+
+          function renderTable() {
+            const table = document.getElementById("menuTable");
+            table.innerHTML = "";
+
+            menu.forEach((item, index) => {
+              const row = document.createElement("tr");
+              row.innerHTML = `
+                <td><strong>${item.name}</strong></td>
+                <td>$${item.price}</td>
+                <td><span class="badge bg-secondary">${item.category || "Uncategorized"}</span></td>
+                <td><small>${item.description || ""}</small></td>
+                <td>
+                  <button class="btn btn-sm btn-warning edit-btn" data-index="${index}">Edit</button>
+                  <button class="btn btn-sm btn-danger" onclick="deleteItem(${item.id})">Delete</button>
+                </td>
+              `;
+              table.appendChild(row);
+            });
+
+            // Safe Event Listeners for Edit Buttons
+            document.querySelectorAll(".edit-btn").forEach((btn) => {
+              btn.addEventListener("click", () => {
+                const index = btn.getAttribute("data-index");
+                editItem(menu[index]);
+              });
+            });
+          }
+
+          // Add / Update Item locally in the array
+          document
+            .getElementById("menuForm")
+            .addEventListener("submit", function (e) {
+              e.preventDefault();
+
+              const id = document.getElementById("itemId").value;
+
+              const item = {
+                id: id ? Number(id) : Date.now(),
+                name: document.getElementById("name").value,
+                price: parseFloat(document.getElementById("price").value),
+                category: document.getElementById("category").value,
+                description: document.getElementById("description").value,
+              };
+
+              if (id) {
+                menu = menu.map((m) => (m.id == id ? item : m));
+              } else {
+                menu.push(item);
+              }
+
+              this.reset();
+              document.getElementById("itemId").value = "";
+              renderTable();
+            });
+
+          function editItem(item) {
+            document.getElementById("itemId").value = item.id;
+            document.getElementById("name").value = item.name;
+            document.getElementById("price").value = item.price;
+            document.getElementById("category").value = item.category;
+            document.getElementById("description").value = item.description;
+            window.scrollTo(0, 0); // Scroll to top to see the form
+          }
+
+          function deleteItem(id) {
+            if (confirm("Delete this item?")) {
+              menu = menu.filter((item) => item.id !== id);
+              renderTable();
+            }
+          }
+
+          async function saveToDatabase() {
+            try {
+              const response = await fetch("/api/menu", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(menu), // 'menu' is your local array
+              });
+
+              if (response.ok) {
+                alert("🚀 Menu updated in MongoDB!");
+              } else {
+                alert("Error saving to database.");
+              }
+            } catch (err) {
+              console.error(err);
+            }
+          }
+          function changeTheme(theme) {
+            document.getElementById("themeStylesheet").href =
+              `https://cdn.jsdelivr.net/npm/bootswatch@5/dist/${theme}/bootstrap.min.css`;
+            localStorage.setItem("theme", theme);
+          }
+
+          const savedTheme = localStorage.getItem("theme");
+          if (savedTheme) changeTheme(savedTheme);
+    </script>
+  </body>
+</html>
